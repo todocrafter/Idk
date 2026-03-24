@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mis Ahorros</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3d;
+    --accent: #00e5a0;
+    --accent2: #ff4f6d;
+    --accent3: #6c63ff;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --success: #00e5a0;
+    --danger: #ff4f6d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 24px 16px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-top: 8px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+
+  .logo span { color: var(--text); }
+
+  .date-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Balance Card */
+  .balance-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .balance-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .balance-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 48px;
+    letter-spacing: -2px;
+    color: var(--text);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .balance-amount.bump {
+    transform: scale(1.05);
+    color: var(--accent);
+  }
+
+  .balance-amount.bump-down {
+    transform: scale(0.97);
+    color: var(--danger);
+  }
+
+  .currency-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Meta / Goal */
+  .meta-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .meta-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .meta-title {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .meta-pct {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .meta-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 0 10px rgba(0,229,160,0.4);
+  }
+
+  .meta-amounts {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .meta-amounts span:last-child { color: var(--text); }
+
+  .no-meta {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 4px 0;
+  }
+
+  .btn-set-meta {
+    display: block;
+    margin: 10px auto 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .btn-set-meta:hover {
+    background: rgba(0,229,160,0.08);
+    border-color: var(--accent);
+  }
+
+  /* Action Buttons */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .btn-action {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    font-size: 13px;
+  }
+
+  .btn-action:hover { transform: translateY(-2px); }
+
+  .btn-action.add {
+    border-color: rgba(0,229,160,0.3);
+    background: rgba(0,229,160,0.05);
+  }
+
+  .btn-action.add:hover {
+    border-color: var(--accent);
+    background: rgba(0,229,160,0.1);
+    box-shadow: 0 4px 20px rgba(0,229,160,0.15);
+  }
+
+  .btn-action.sub {
+    border-color: rgba(255,79,109,0.3);
+    background: rgba(255,79,109,0.05);
+  }
+
+  .btn-action.sub:hover {
+    border-color: var(--danger);
+    background: rgba(255,79,109,0.1);
+    box-shadow: 0 4px 20px rgba(255,79,109,0.15);
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .btn-action.add .btn-icon { background: rgba(0,229,160,0.15); }
+  .btn-action.sub .btn-icon { background: rgba(255,79,109,0.15); }
+
+  .btn-label { font-size: 12px; line-height: 1.3; }
+  .btn-label small { display: block; font-size: 10px; color: var(--muted); }
+
+  /* History */
+  .history-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .history-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .history-title {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .btn-clear {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .btn-clear:hover { color: var(--danger); }
+
+  .history-list { max-height: 280px; overflow-y: auto; }
+
+  .history-list::-webkit-scrollbar { width: 3px; }
+  .history-list::-webkit-scrollbar-track { background: transparent; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(42,42,61,0.5);
+    animation: slideIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    gap: 12px;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .history-item:last-child { border-bottom: none; }
+
+  .history-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .history-dot.add { background: var(--success); box-shadow: 0 0 6px rgba(0,229,160,0.5); }
+  .history-dot.sub { background: var(--danger); box-shadow: 0 0 6px rgba(255,79,109,0.5); }
+
+  .history-info { flex: 1; }
+
+  .history-desc {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .history-time {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .history-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .history-amount.add { color: var(--success); }
+  .history-amount.sub { color: var(--danger); }
+
+  .empty-history {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 420px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    margin: 0 auto 24px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .modal-title.add-title { color: var(--accent); }
+  .modal-title.sub-title { color: var(--danger); }
+  .modal-title.meta-title-text { color: var(--accent3); }
+
+  .input-group { margin-bottom: 16px; }
+
+  .input-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .input-field {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-field:focus { border-color: var(--accent); }
+  .input-field::placeholder { color: var(--muted); }
+
+  .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-cancel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { color: var(--text); border-color: var(--text); }
+
+  .btn-confirm {
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-confirm.add { background: var(--accent); color: #000; }
+  .btn-confirm.sub { background: var(--danger); color: #fff; }
+  .btn-confirm.meta { background: var(--accent3); color: #fff; }
+
+  .btn-confirm:hover { transform: scale(1.02); opacity: 0.9; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 13px;
+    z-index: 200;
+    transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 380px) {
+    .balance-amount { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">mis<span>ahorros</span></div>
+    <div class="date-label" id="dateLabel"></div>
+  </header>
+
+  <!-- Balance -->
+  <div class="balance-card">
+    <div class="balance-label">// balance total</div>
+    <div class="balance-amount" id="balanceDisplay">$0.00</div>
+    <div class="currency-label">MXN · actualizado ahora</div>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-card" id="metaCard">
+    <div id="metaContent">
+      <div class="no-meta">Sin meta configurada</div>
+      <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="actions">
+    <button class="btn-action add" onclick="openModal('add')">
+      <div class="btn-icon">＋</div>
+      <div class="btn-label">Ingresar<small>agregar dinero</small></div>
+    </button>
+    <button class="btn-action sub" onclick="openModal('sub')">
+      <div class="btn-icon">−</div>
+      <div class="btn-label">Gastar<small>restar dinero</small></div>
+    </button>
+  </div>
+
+  <!-- Historial -->
+  <div class="history-card">
+    <div class="history-header">
+      <div class="history-title">// movimientos</div>
+      <button class="btn-clear" onclick="clearHistory()">limpiar</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="empty-history">Aún no hay movimientos.<br>¡Empieza ahorrando!</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Ingresar dinero</div>
+
+    <div id="modalBody">
+      <div class="input-group">
+        <label class="input-label">Cantidad</label>
+        <input class="input-field" type="number" id="amountInput" placeholder="0.00" min="0" inputmode="decimal">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Descripción (opcional)</label>
+        <input class="input-field" type="text" id="descInput" placeholder="ej: quincena, venta...">
+      </div>
+    </div>
+
+    <div id="metaBody" style="display:none">
+      <div class="input-group">
+        <label class="input-label">Nombre de la meta</label>
+        <input class="input-field" type="text" id="metaNameInput" placeholder="ej: Nintendo Switch...">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Monto objetivo</label>
+        <input class="input-field" type="number" id="metaAmountInput" placeholder="0.00" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">cancelar</button>
+      <button class="btn-confirm" id="btnConfirm" onclick="confirm()">confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let balance = parseFloat(localStorage.getItem('balance') || '0');
+  let history = JSON.parse(localStorage.getItem('history') || '[]');
+  let meta = JSON.parse(localStorage.getItem('meta') || 'null');
+  let currentMode = 'add';
+
+  function fmt(n) {
+    return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function save() {
+    localStorage.setItem('balance', balance);
+    localStorage.setItem('history', JSON.stringify(history));
+    localStorage.setItem('meta', JSON.stringify(meta));
+  }
+
+  function renderBalance() {
+    const el = document.getElementById('balanceDisplay');
+    el.textContent = fmt(balance);
+    el.classList.remove('bump', 'bump-down');
+  }
+
+  function animateBalance(type) {
+    const el = document.getElementById('balanceDisplay');
+    el.classList.add(type === 'add' ? 'bump' : 'bump-down');
+    setTimeout(() => el.classList.remove('bump', 'bump-down'), 400);
+  }
+
+  function renderMeta() {
+    const container = document.getElementById('metaContent');
+    if (!meta) {
+      container.innerHTML = `
+        <div class="no-meta">Sin meta configurada</div>
+        <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>
+      `;
+      return;
+    }
+    const pct = Math.min((balance / meta.amount) * 100, 100).toFixed(1);
+    container.innerHTML = `
+      <div class="meta-header">
+        <div class="meta-title">// mi meta</div>
+        <div class="meta-pct">${pct}%</div>
+      </div>
+      <div class="meta-name">${meta.name}</div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="meta-amounts">
+        <span>Ahorrado: ${fmt(balance)}</span>
+        <span>Meta: ${fmt(meta.amount)}</span>
+      </div>
+      <button class="btn-set-meta" style="margin-top:12px" onclick="openModal('meta')">Cambiar meta</button>
+    `;
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (history.length === 0) {
+      list.innerHTML = '<div class="empty-history">Aún no hay movimientos.<br>¡Empieza ahorrando!</div>';
+      return;
+    }
+    list.innerHTML = [...history].reverse().map(h => `
+      <div class="history-item">
+        <div class="history-dot ${h.type}"></div>
+        <div class="history-info">
+          <div class="history-desc">${h.desc || (h.type === 'add' ? 'Ingreso' : 'Gasto')}</div>
+          <div class="history-time">${h.time}</div>
+        </div>
+        <div class="history-amount ${h.type}">${h.type === 'add' ? '+' : '−'}${fmt(h.amount)}</div>
+      </div>
+    `).join('');
+  }
+
+  function render() {
+    renderBalance();
+    renderMeta();
+    renderHistory();
+  }
+
+  function openModal(mode) {
+    currentMode = mode;
+    const overlay = document.getElementById('modalOverlay');
+    const title = document.getElementById('modalTitle');
+    const btn = document.getElementById('btnConfirm');
+    const body = document.getElementById('modalBody');
+    const metaBody = document.getElementById('metaBody');
+
+    if (mode === 'add') {
+      title.textContent = '+ Ingresar dinero';
+      title.className = 'modal-title add-title';
+      btn.className = 'btn-confirm add';
+      btn.textContent = 'agregar';
+      body.style.display = 'block';
+      metaBody.style.display = 'none';
+      document.getElementById('amountInput').value = '';
+      document.getElementById('descInput').value = '';
+      setTimeout(() => document.getElementById('amountInput').focus(), 400);
+    } else if (mode === 'sub') {
+      title.textContent = '− Registrar gasto';
+      title.className = 'modal-title sub-title';
+      btn.className = 'btn-confirm sub';
+      btn.textContent = 'registrar';
+      body.style.display = 'block';
+      metaBody.style.display = 'none';
+      document.getElementById('amountInput').value = '';
+      document.getElementById('descInput').value = '';
+      setTimeout(() => document.getElementById('amountInput').focus(), 400);
+    } else {
+      title.textContent = '◎ Configurar meta';
+      title.className = 'modal-title meta-title-text';
+      btn.className = 'btn-confirm meta';
+      btn.textContent = 'guardar';
+      body.style.display = 'none';
+      metaBody.style.display = 'block';
+      if (meta) {
+        document.getElementById('metaNameInput').value = meta.name;
+        document.getElementById('metaAmountInput').value = meta.amount;
+      } else {
+        document.getElementById('metaNameInput').value = '';
+        document.getElementById('metaAmountInput').value = '';
+      }
+    }
+
+    overlay.classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  function confirm() {
+    if (currentMode === 'add' || currentMode === 'sub') {
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      const desc = document.getElementById('descInput').value.trim();
+      if (!amount || amount <= 0) { showToast('⚠️ Ingresa una cantidad válida'); return; }
+      if (currentMode === 'sub' && amount > balance) { showToast('⚠️ No tienes suficiente saldo'); return; }
+
+      balance = currentMode === 'add' ? balance + amount : balance - amount;
+      const now = new Date();
+      history.push({
+        type: currentMode,
+        amount,
+        desc,
+        time: now.toLocaleString('es-MX', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })
+      });
+      save();
+      animateBalance(currentMode);
+      render();
+      showToast(currentMode === 'add' ? '✅ Dinero agregado' : '💸 Gasto registrado');
+    } else {
+      const name = document.getElementById('metaNameInput').value.trim();
+      const amount = parseFloat(document.getElementById('metaAmountInput').value);
+      if (!name) { showToast('⚠️ Escribe un nombre para tu meta'); return; }
+      if (!amount || amount <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
+      meta = { name, amount };
+      save();
+      renderMeta();
+      showToast('🎯 Meta guardada');
+    }
+    closeModal();
+  }
+
+  function clearHistory() {
+    if (history.length === 0) return;
+    if (confirm('¿Limpiar todo el historial?')) {
+      history = [];
+      save();
+      renderHistory();
+      showToast('🗑️ Historial limpiado');
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Date
+  const d = new Date();
+  document.getElementById('dateLabel').textContent =
+    d.toLocaleDateString('es-MX', { weekday:'short', day:'numeric', month:'short' }).toUpperCase();
+
+  // Enter key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('modalOverlay').classList.contains('open')) confirm();
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Override confirm to avoid conflict with window.confirm
+  const origConfirm = window.confirm.bind(window);
+  window.confirm = origConfirm;
+
+  render();
+</script>
+</body>
+</html>
