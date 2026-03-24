@@ -30,7 +30,6 @@
     overflow-x: hidden;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
@@ -67,8 +66,9 @@
     letter-spacing: -0.5px;
     color: var(--accent);
   }
-
   .logo span { color: var(--text); }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
 
   .date-label {
     font-size: 10px;
@@ -76,6 +76,57 @@
     text-transform: uppercase;
     letter-spacing: 2px;
   }
+
+  .btn-region {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-region:hover { border-color: var(--accent3); color: var(--text); }
+  .flag-icon { font-size: 14px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 16px;
+    gap: 2px;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  .tab.active {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
 
   /* Balance Card */
   .balance-card {
@@ -87,18 +138,14 @@
     position: relative;
     overflow: hidden;
   }
-
   .balance-card::before {
     content: '';
     position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 180px;
-    height: 180px;
+    top: -60px; right: -60px;
+    width: 180px; height: 180px;
     background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
     pointer-events: none;
   }
-
   .balance-label {
     font-size: 10px;
     color: var(--muted);
@@ -106,7 +153,6 @@
     letter-spacing: 2px;
     margin-bottom: 8px;
   }
-
   .balance-amount {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -117,24 +163,11 @@
     line-height: 1;
     margin-bottom: 4px;
   }
+  .balance-amount.bump { transform: scale(1.05); color: var(--accent); }
+  .balance-amount.bump-down { transform: scale(0.97); color: var(--danger); }
+  .currency-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
 
-  .balance-amount.bump {
-    transform: scale(1.05);
-    color: var(--accent);
-  }
-
-  .balance-amount.bump-down {
-    transform: scale(0.97);
-    color: var(--danger);
-  }
-
-  .currency-label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-  }
-
-  /* Meta / Goal */
+  /* Meta */
   .meta-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -142,44 +175,11 @@
     padding: 20px 24px;
     margin-bottom: 16px;
   }
-
-  .meta-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .meta-title {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .meta-pct {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--accent);
-  }
-
-  .meta-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .progress-track {
-    height: 6px;
-    background: var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-
+  .meta-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .meta-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+  .meta-pct { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); }
+  .meta-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .progress-track { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent3), var(--accent));
@@ -187,351 +187,397 @@
     transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
     box-shadow: 0 0 10px rgba(0,229,160,0.4);
   }
-
-  .meta-amounts {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
+  .meta-amounts { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
   .meta-amounts span:last-child { color: var(--text); }
-
-  .no-meta {
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-    padding: 4px 0;
-  }
-
+  .no-meta { text-align: center; color: var(--muted); font-size: 12px; padding: 4px 0; }
   .btn-set-meta {
-    display: block;
-    margin: 10px auto 0;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 6px 16px;
-    border-radius: 999px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.2s;
+    display: block; margin: 10px auto 0;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--accent); font-family: 'DM Mono', monospace;
+    font-size: 11px; padding: 6px 16px; border-radius: 999px;
+    cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
   }
+  .btn-set-meta:hover { background: rgba(0,229,160,0.08); border-color: var(--accent); }
 
-  .btn-set-meta:hover {
-    background: rgba(0,229,160,0.08);
-    border-color: var(--accent);
-  }
-
-  /* Action Buttons */
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
+  /* Actions */
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .btn-action {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
-    font-size: 13px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; cursor: pointer;
+    font-family: 'DM Mono', monospace; color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.2s; font-size: 13px;
   }
-
   .btn-action:hover { transform: translateY(-2px); }
-
-  .btn-action.add {
-    border-color: rgba(0,229,160,0.3);
-    background: rgba(0,229,160,0.05);
-  }
-
-  .btn-action.add:hover {
-    border-color: var(--accent);
-    background: rgba(0,229,160,0.1);
-    box-shadow: 0 4px 20px rgba(0,229,160,0.15);
-  }
-
-  .btn-action.sub {
-    border-color: rgba(255,79,109,0.3);
-    background: rgba(255,79,109,0.05);
-  }
-
-  .btn-action.sub:hover {
-    border-color: var(--danger);
-    background: rgba(255,79,109,0.1);
-    box-shadow: 0 4px 20px rgba(255,79,109,0.15);
-  }
-
-  .btn-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-
+  .btn-action.add { border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.05); }
+  .btn-action.add:hover { border-color: var(--accent); background: rgba(0,229,160,0.1); box-shadow: 0 4px 20px rgba(0,229,160,0.15); }
+  .btn-action.sub { border-color: rgba(255,79,109,0.3); background: rgba(255,79,109,0.05); }
+  .btn-action.sub:hover { border-color: var(--danger); background: rgba(255,79,109,0.1); box-shadow: 0 4px 20px rgba(255,79,109,0.15); }
+  .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .btn-action.add .btn-icon { background: rgba(0,229,160,0.15); }
   .btn-action.sub .btn-icon { background: rgba(255,79,109,0.15); }
-
   .btn-label { font-size: 12px; line-height: 1.3; }
   .btn-label small { display: block; font-size: 10px; color: var(--muted); }
 
   /* History */
-  .history-card {
+  .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .history-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .history-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+  .btn-clear { background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; letter-spacing: 1px; transition: color 0.2s; }
+  .btn-clear:hover { color: var(--danger); }
+  .history-list { max-height: 280px; overflow-y: auto; }
+  .history-list::-webkit-scrollbar { width: 3px; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+  .history-item { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(42,42,61,0.5); animation: slideIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); gap: 12px; }
+  .history-item:last-child { border-bottom: none; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+  .history-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .history-dot.add { background: var(--success); box-shadow: 0 0 6px rgba(0,229,160,0.5); }
+  .history-dot.sub { background: var(--danger); box-shadow: 0 0 6px rgba(255,79,109,0.5); }
+  .history-info { flex: 1; }
+  .history-desc { font-size: 12px; color: var(--text); margin-bottom: 2px; }
+  .history-time { font-size: 10px; color: var(--muted); }
+  .history-amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
+  .history-amount.add { color: var(--success); }
+  .history-amount.sub { color: var(--danger); }
+  .empty-history { padding: 32px 20px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
+
+  /* ===== ECONOMIA TAB ===== */
+  .eco-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .eco-section-title {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+  .region-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .region-flag { font-size: 32px; }
+  .region-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+  .region-currency { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .converter-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    margin-bottom: 12px;
+  }
+  .converter-input-wrap { flex: 1; }
+  .converter-input-wrap label { font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 6px; text-transform: uppercase; }
+  .converter-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .converter-input:focus { border-color: var(--accent3); }
+  .converter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    min-width: 80px;
+  }
+  .btn-convert {
+    background: var(--accent3);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-convert:hover { opacity: 0.85; transform: scale(1.02); }
+
+  .conversion-result {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .result-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--accent);
+    letter-spacing: -1px;
+  }
+  .result-rate { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .result-placeholder { font-size: 12px; color: var(--muted); }
+
+  .google-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--accent3);
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 999px;
+    transition: all 0.2s;
+  }
+  .google-link:hover { background: rgba(108,99,255,0.1); border-color: var(--accent3); }
+
+  /* ===== WISHLIST TAB ===== */
+  .wishlist-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
+    margin-bottom: 16px;
   }
-
-  .history-header {
+  .wishlist-header {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
+  .wishlist-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
 
-  .history-title {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
+  .wishlist-add {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wish-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .wish-input:focus { border-color: var(--accent); }
+  .wish-input::placeholder { color: var(--muted); }
+  .btn-add-wish {
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.3);
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .btn-add-wish:hover { background: rgba(0,229,160,0.18); border-color: var(--accent); }
+
+  .wishlist-items { max-height: 380px; overflow-y: auto; }
+  .wishlist-items::-webkit-scrollbar { width: 3px; }
+  .wishlist-items::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+  .wish-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(42,42,61,0.5);
+    animation: slideIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .wish-item:last-child { border-bottom: none; }
+
+  .wish-item-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .wish-item-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    word-break: break-word;
+  }
+  .wish-item-price {
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+    font-weight: 500;
   }
 
-  .btn-clear {
+  .wish-item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--accent3);
+    text-decoration: none;
+    word-break: break-all;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .wish-item-link:hover { text-decoration: underline; }
+
+  .wish-item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .wish-item-note { font-size: 11px; color: var(--muted); flex: 1; }
+
+  .btn-del-wish {
     background: none;
     border: none;
     color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
     cursor: pointer;
-    letter-spacing: 1px;
-    transition: color 0.2s;
-  }
-
-  .btn-clear:hover { color: var(--danger); }
-
-  .history-list { max-height: 280px; overflow-y: auto; }
-
-  .history-list::-webkit-scrollbar { width: 3px; }
-  .history-list::-webkit-scrollbar-track { background: transparent; }
-  .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
-
-  .history-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(42,42,61,0.5);
-    animation: slideIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-    gap: 12px;
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-12px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .history-item:last-child { border-bottom: none; }
-
-  .history-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
     flex-shrink: 0;
   }
+  .btn-del-wish:hover { color: var(--danger); background: rgba(255,79,109,0.1); }
 
-  .history-dot.add { background: var(--success); box-shadow: 0 0 6px rgba(0,229,160,0.5); }
-  .history-dot.sub { background: var(--danger); box-shadow: 0 0 6px rgba(255,79,109,0.5); }
+  .empty-wish { padding: 32px 20px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
 
-  .history-info { flex: 1; }
-
-  .history-desc {
-    font-size: 12px;
+  .notas-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .notas-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .notas-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+  .btn-save-notes { background: none; border: none; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; letter-spacing: 1px; transition: color 0.2s; }
+  .btn-save-notes:hover { color: var(--text); }
+  .notas-textarea {
+    width: 100%;
+    min-height: 140px;
+    background: transparent;
+    border: none;
+    padding: 16px 20px;
     color: var(--text);
-    margin-bottom: 2px;
-  }
-
-  .history-time {
-    font-size: 10px;
-    color: var(--muted);
-  }
-
-  .history-amount {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-  }
-
-  .history-amount.add { color: var(--success); }
-  .history-amount.sub { color: var(--danger); }
-
-  .empty-history {
-    padding: 32px 20px;
-    text-align: center;
-    color: var(--muted);
+    font-family: 'DM Mono', monospace;
     font-size: 12px;
-    line-height: 1.8;
+    resize: none;
+    outline: none;
+    line-height: 1.7;
   }
+  .notas-textarea::placeholder { color: var(--muted); }
 
   /* Modal */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.7);
     backdrop-filter: blur(8px);
     z-index: 100;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
   }
-
-  .modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 24px 24px 0 0;
     padding: 28px 24px 40px;
-    width: 100%;
-    max-width: 420px;
+    width: 100%; max-width: 420px;
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+    max-height: 90vh;
+    overflow-y: auto;
   }
-
-  .modal-overlay.open .modal {
-    transform: translateY(0);
-  }
-
-  .modal-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 999px;
-    margin: 0 auto 24px;
-  }
-
-  .modal-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 20px;
-    margin-bottom: 20px;
-    letter-spacing: -0.5px;
-  }
-
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 999px; margin: 0 auto 24px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 20px; letter-spacing: -0.5px; }
   .modal-title.add-title { color: var(--accent); }
   .modal-title.sub-title { color: var(--danger); }
   .modal-title.meta-title-text { color: var(--accent3); }
-
+  .modal-title.region-title { color: var(--accent3); }
   .input-group { margin-bottom: 16px; }
-
-  .input-label {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    display: block;
-  }
-
+  .input-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; display: block; }
   .input-field {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.2s;
+    width: 100%; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 16px; outline: none; transition: border-color 0.2s;
   }
-
   .input-field:focus { border-color: var(--accent); }
   .input-field::placeholder { color: var(--muted); }
-
-  .modal-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .btn-cancel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+  .btn-cancel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; transition: all 0.2s; }
   .btn-cancel:hover { color: var(--text); border-color: var(--text); }
-
-  .btn-confirm {
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-
+  .btn-confirm { border: none; border-radius: 12px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
   .btn-confirm.add { background: var(--accent); color: #000; }
   .btn-confirm.sub { background: var(--danger); color: #fff; }
   .btn-confirm.meta { background: var(--accent3); color: #fff; }
-
+  .btn-confirm.region { background: var(--accent3); color: #fff; }
   .btn-confirm:hover { transform: scale(1.02); opacity: 0.9; }
+
+  /* Region grid */
+  .region-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 340px; overflow-y: auto; margin-bottom: 4px; }
+  .region-option {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .region-option:hover { border-color: var(--accent3); }
+  .region-option.selected { border-color: var(--accent3); background: rgba(108,99,255,0.12); }
+  .region-option .r-flag { font-size: 20px; }
+  .region-option .r-info { flex: 1; min-width: 0; }
+  .region-option .r-name { font-size: 11px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .region-option .r-cur { font-size: 10px; color: var(--muted); }
 
   /* Toast */
   .toast {
-    position: fixed;
-    top: 24px;
-    left: 50%;
+    position: fixed; top: 24px; left: 50%;
     transform: translateX(-50%) translateY(-80px);
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 10px 20px;
-    font-size: 13px;
-    z-index: 200;
-    transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
-    white-space: nowrap;
-    pointer-events: none;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 10px 20px; font-size: 13px;
+    z-index: 200; transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
+    white-space: nowrap; pointer-events: none;
   }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
+  .loading-spin {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    font-size: 18px;
   }
-
-  /* Responsive tweaks */
-  @media (max-width: 380px) {
-    .balance-amount { font-size: 38px; }
-  }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -539,44 +585,162 @@
 <div class="app">
   <header>
     <div class="logo">mis<span>ahorros</span></div>
-    <div class="date-label" id="dateLabel"></div>
+    <div class="header-right">
+      <div class="date-label" id="dateLabel"></div>
+      <button class="btn-region" onclick="openModal('region')">
+        <span class="flag-icon" id="headerFlag">\ud83c\udf0d</span>
+        <span id="headerCurrency">---</span>
+      </button>
+    </div>
   </header>
 
-  <!-- Balance -->
-  <div class="balance-card">
-    <div class="balance-label">// balance total</div>
-    <div class="balance-amount" id="balanceDisplay">$0.00</div>
-    <div class="currency-label">MXN · actualizado ahora</div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('ahorros', this)">\ud83d\udcb0 Ahorros</button>
+    <button class="tab" onclick="switchTab('economia', this)">\ud83d\udcc8 Econom\u00eda</button>
+    <button class="tab" onclick="switchTab('wishlist', this)">\ud83d\uded2 Wishlist</button>
   </div>
 
-  <!-- Meta -->
-  <div class="meta-card" id="metaCard">
-    <div id="metaContent">
-      <div class="no-meta">Sin meta configurada</div>
-      <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>
+  <!-- TAB: AHORROS -->
+  <div class="section active" id="tab-ahorros">
+    <div class="balance-card">
+      <div class="balance-label">// balance total</div>
+      <div class="balance-amount" id="balanceDisplay">$0.00</div>
+      <div class="currency-label" id="currencyLabel">--- \u00b7 actualizado ahora</div>
+    </div>
+    <div class="meta-card" id="metaCard">
+      <div id="metaContent">
+        <div class="no-meta">Sin meta configurada</div>
+        <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-action add" onclick="openModal('add')">
+        <div class="btn-icon">\uff0b</div>
+        <div class="btn-label">Ingresar<small>agregar dinero</small></div>
+      </button>
+      <button class="btn-action sub" onclick="openModal('sub')">
+        <div class="btn-icon">\u2212</div>
+        <div class="btn-label">Gastar<small>restar dinero</small></div>
+      </button>
+    </div>
+    <div class="history-card">
+      <div class="history-header">
+        <div class="history-title">// movimientos</div>
+        <button class="btn-clear" onclick="clearHistory()">limpiar</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-history">A\u00fan no hay movimientos.<br>\u00a1Empieza ahorrando!</div>
+      </div>
     </div>
   </div>
 
-  <!-- Acciones -->
-  <div class="actions">
-    <button class="btn-action add" onclick="openModal('add')">
-      <div class="btn-icon">＋</div>
-      <div class="btn-label">Ingresar<small>agregar dinero</small></div>
-    </button>
-    <button class="btn-action sub" onclick="openModal('sub')">
-      <div class="btn-icon">−</div>
-      <div class="btn-label">Gastar<small>restar dinero</small></div>
-    </button>
+  <!-- TAB: ECONOMIA -->
+  <div class="section" id="tab-economia">
+    <div class="eco-card">
+      <div class="eco-section-title">// tu regi\u00f3n</div>
+      <div class="region-info">
+        <div class="region-flag" id="ecoFlag">\ud83c\udf0d</div>
+        <div>
+          <div class="region-name" id="ecoRegionName">Sin regi\u00f3n</div>
+          <div class="region-currency" id="ecoRegionCurrency">Configura tu regi\u00f3n arriba</div>
+        </div>
+      </div>
+      <button class="btn-set-meta" style="margin:0" onclick="openModal('region')">Cambiar regi\u00f3n</button>
+    </div>
+
+    <div class="eco-card">
+      <div class="eco-section-title">// convertidor de moneda</div>
+      <div class="converter-row">
+        <div class="converter-input-wrap">
+          <label>Cantidad</label>
+          <input class="converter-input" type="number" id="convertAmount" placeholder="500" inputmode="decimal">
+        </div>
+        <div class="converter-input-wrap" style="max-width:90px">
+          <label>De</label>
+          <select class="converter-select" id="convertFrom">
+            <option value="USD">USD</option>
+            <option value="DOP">DOP</option>
+            <option value="MXN">MXN</option>
+            <option value="EUR">EUR</option>
+            <option value="COP">COP</option>
+            <option value="ARS">ARS</option>
+            <option value="CLP">CLP</option>
+            <option value="PEN">PEN</option>
+            <option value="BRL">BRL</option>
+            <option value="GTQ">GTQ</option>
+            <option value="CRC">CRC</option>
+            <option value="HNL">HNL</option>
+            <option value="BOB">BOB</option>
+            <option value="PYG">PYG</option>
+            <option value="UYU">UYU</option>
+            <option value="VES">VES</option>
+            <option value="CAD">CAD</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+        <div class="converter-input-wrap" style="max-width:90px">
+          <label>A</label>
+          <select class="converter-select" id="convertTo">
+            <option value="USD">USD</option>
+            <option value="DOP" selected>DOP</option>
+            <option value="MXN">MXN</option>
+            <option value="EUR">EUR</option>
+            <option value="COP">COP</option>
+            <option value="ARS">ARS</option>
+            <option value="CLP">CLP</option>
+            <option value="PEN">PEN</option>
+            <option value="BRL">BRL</option>
+            <option value="GTQ">GTQ</option>
+            <option value="CRC">CRC</option>
+            <option value="HNL">HNL</option>
+            <option value="BOB">BOB</option>
+            <option value="PYG">PYG</option>
+            <option value="UYU">UYU</option>
+            <option value="VES">VES</option>
+            <option value="CAD">CAD</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-convert" onclick="doConvert()">Convertir \u2192</button>
+
+      <div class="conversion-result" id="convResult" style="margin-top:12px">
+        <div class="result-placeholder">Ingresa una cantidad y presiona Convertir</div>
+      </div>
+
+      <div style="text-align:center; margin-top:10px">
+        <a class="google-link" id="googleConvertLink" href="#" target="_blank" style="display:none">
+          \ud83d\udd0d Ver en Google
+        </a>
+      </div>
+    </div>
   </div>
 
-  <!-- Historial -->
-  <div class="history-card">
-    <div class="history-header">
-      <div class="history-title">// movimientos</div>
-      <button class="btn-clear" onclick="clearHistory()">limpiar</button>
+  <!-- TAB: WISHLIST -->
+  <div class="section" id="tab-wishlist">
+    <div class="wishlist-card">
+      <div class="wishlist-header">
+        <div class="wishlist-title">// lista de deseos</div>
+        <span style="font-size:10px;color:var(--muted)" id="wishCount">0 items</span>
+      </div>
+      <div class="wishlist-add">
+        <input class="wish-input" type="text" id="wishName" placeholder="Nombre del producto (ej: Teclado Redragon)">
+        <input class="wish-input" type="url" id="wishLink" placeholder="Link (ej: https://mercadolibre.com.do/...)">
+        <input class="wish-input" type="text" id="wishPrice" placeholder="Precio aprox (opcional)">
+        <button class="btn-add-wish" onclick="addWish()">+ Agregar a la lista</button>
+      </div>
+      <div class="wishlist-items" id="wishlistItems">
+        <div class="empty-wish">Tu lista est\u00e1 vac\u00eda.<br>\u00a1Agrega lo que quieres comprar! \ud83d\uded2</div>
+      </div>
     </div>
-    <div class="history-list" id="historyList">
-      <div class="empty-history">Aún no hay movimientos.<br>¡Empieza ahorrando!</div>
+
+    <div class="notas-card">
+      <div class="notas-header">
+        <div class="notas-title">// notas r\u00e1pidas</div>
+        <button class="btn-save-notes" onclick="saveNotes()">guardar \u2713</button>
+      </div>
+      <textarea class="notas-textarea" id="notasArea" placeholder="Escribe notas, links extra, recordatorios...&#10;&#10;ej: Revisar precios el viernes&#10;Pegar link del kit gamer aqu\u00ed"></textarea>
     </div>
   </div>
 </div>
@@ -593,7 +757,7 @@
         <input class="input-field" type="number" id="amountInput" placeholder="0.00" min="0" inputmode="decimal">
       </div>
       <div class="input-group">
-        <label class="input-label">Descripción (opcional)</label>
+        <label class="input-label">Descripci\u00f3n (opcional)</label>
         <input class="input-field" type="text" id="descInput" placeholder="ej: quincena, venta...">
       </div>
     </div>
@@ -601,7 +765,7 @@
     <div id="metaBody" style="display:none">
       <div class="input-group">
         <label class="input-label">Nombre de la meta</label>
-        <input class="input-field" type="text" id="metaNameInput" placeholder="ej: Nintendo Switch...">
+        <input class="input-field" type="text" id="metaNameInput" placeholder="ej: Teclado + Mouse gaming...">
       </div>
       <div class="input-group">
         <label class="input-label">Monto objetivo</label>
@@ -609,215 +773,316 @@
       </div>
     </div>
 
+    <div id="regionBody" style="display:none">
+      <div class="region-grid" id="regionGrid"></div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">cancelar</button>
-      <button class="btn-confirm" id="btnConfirm" onclick="confirm()">confirmar</button>
+      <button class="btn-confirm" id="btnConfirm" onclick="confirmModal()">confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-  let balance = parseFloat(localStorage.getItem('balance') || '0');
-  let history = JSON.parse(localStorage.getItem('history') || '[]');
-  let meta = JSON.parse(localStorage.getItem('meta') || 'null');
-  let currentMode = 'add';
+// ===== DATA =====
+const REGIONS = [
+  { code:'DO', name:'Rep. Dominicana', flag:'\ud83c\udde9\ud83c\uddf4', currency:'DOP', symbol:'RD$', locale:'es-DO' },
+  { code:'MX', name:'M\u00e9xico',          flag:'\ud83c\uddf2\ud83c\uddfd', currency:'MXN', symbol:'$',   locale:'es-MX' },
+  { code:'CO', name:'Colombia',        flag:'\ud83c\udde8\ud83c\uddf4', currency:'COP', symbol:'$',   locale:'es-CO' },
+  { code:'AR', name:'Argentina',       flag:'\ud83c\udde6\ud83c\uddf7', currency:'ARS', symbol:'$',   locale:'es-AR' },
+  { code:'CL', name:'Chile',           flag:'\ud83c\udde8\ud83c\uddf1', currency:'CLP', symbol:'$',   locale:'es-CL' },
+  { code:'PE', name:'Per\u00fa',            flag:'\ud83c\uddf5\ud83c\uddea', currency:'PEN', symbol:'S/',  locale:'es-PE' },
+  { code:'VE', name:'Venezuela',       flag:'\ud83c\uddfb\ud83c\uddea', currency:'VES', symbol:'Bs',  locale:'es-VE' },
+  { code:'GT', name:'Guatemala',       flag:'\ud83c\uddec\ud83c\uddf9', currency:'GTQ', symbol:'Q',   locale:'es-GT' },
+  { code:'CR', name:'Costa Rica',      flag:'\ud83c\udde8\ud83c\uddf7', currency:'CRC', symbol:'\u20a1',   locale:'es-CR' },
+  { code:'HN', name:'Honduras',        flag:'\ud83c\udded\ud83c\uddf3', currency:'HNL', symbol:'L',   locale:'es-HN' },
+  { code:'BO', name:'Bolivia',         flag:'\ud83c\udde7\ud83c\uddf4', currency:'BOB', symbol:'Bs',  locale:'es-BO' },
+  { code:'PY', name:'Paraguay',        flag:'\ud83c\uddf5\ud83c\uddfe', currency:'PYG', symbol:'\u20b2',   locale:'es-PY' },
+  { code:'UY', name:'Uruguay',         flag:'\ud83c\uddfa\ud83c\uddfe', currency:'UYU', symbol:'$U',  locale:'es-UY' },
+  { code:'BR', name:'Brasil',          flag:'\ud83c\udde7\ud83c\uddf7', currency:'BRL', symbol:'R$',  locale:'pt-BR' },
+  { code:'US', name:'Estados Unidos',  flag:'\ud83c\uddfa\ud83c\uddf8', currency:'USD', symbol:'$',   locale:'en-US' },
+  { code:'ES', name:'Espa\u00f1a',          flag:'\ud83c\uddea\ud83c\uddf8', currency:'EUR', symbol:'\u20ac',   locale:'es-ES' },
+  { code:'CA', name:'Canad\u00e1',          flag:'\ud83c\udde8\ud83c\udde6', currency:'CAD', symbol:'C$',  locale:'en-CA' },
+  { code:'GB', name:'Reino Unido',     flag:'\ud83c\uddec\ud83c\udde7', currency:'GBP', symbol:'\u00a3',   locale:'en-GB' },
+];
 
-  function fmt(n) {
-    return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
+// ===== STATE =====
+let balance   = parseFloat(localStorage.getItem('balance') || '0');
+let history   = JSON.parse(localStorage.getItem('history') || '[]');
+let meta      = JSON.parse(localStorage.getItem('meta') || 'null');
+let regionCode= localStorage.getItem('region') || 'DO';
+let wishlist  = JSON.parse(localStorage.getItem('wishlist') || '[]');
+let notes     = localStorage.getItem('notes') || '';
+let currentMode = 'add';
+let selectedRegionCode = regionCode;
 
-  function save() {
-    localStorage.setItem('balance', balance);
-    localStorage.setItem('history', JSON.stringify(history));
-    localStorage.setItem('meta', JSON.stringify(meta));
-  }
+function getRegion(code) { return REGIONS.find(r => r.code === code) || REGIONS[0]; }
 
-  function renderBalance() {
-    const el = document.getElementById('balanceDisplay');
-    el.textContent = fmt(balance);
-    el.classList.remove('bump', 'bump-down');
-  }
+function save() {
+  localStorage.setItem('balance', balance);
+  localStorage.setItem('history', JSON.stringify(history));
+  localStorage.setItem('meta', JSON.stringify(meta));
+  localStorage.setItem('region', regionCode);
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  localStorage.setItem('notes', notes);
+}
 
-  function animateBalance(type) {
-    const el = document.getElementById('balanceDisplay');
-    el.classList.add(type === 'add' ? 'bump' : 'bump-down');
-    setTimeout(() => el.classList.remove('bump', 'bump-down'), 400);
-  }
+// ===== FORMAT =====
+function fmt(n) {
+  const r = getRegion(regionCode);
+  return r.symbol + n.toLocaleString(r.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-  function renderMeta() {
-    const container = document.getElementById('metaContent');
-    if (!meta) {
-      container.innerHTML = `
-        <div class="no-meta">Sin meta configurada</div>
-        <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>
-      `;
-      return;
-    }
-    const pct = Math.min((balance / meta.amount) * 100, 100).toFixed(1);
+// ===== TABS =====
+function switchTab(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== RENDER =====
+function renderHeader() {
+  const r = getRegion(regionCode);
+  document.getElementById('headerFlag').textContent = r.flag;
+  document.getElementById('headerCurrency').textContent = r.currency;
+  document.getElementById('currencyLabel').textContent = r.currency + ' \u00b7 actualizado ahora';
+  document.getElementById('ecoFlag').textContent = r.flag;
+  document.getElementById('ecoRegionName').textContent = r.name;
+  document.getElementById('ecoRegionCurrency').textContent = r.currency + ' \u2014 ' + r.symbol;
+  // Set default convert-from to local currency
+  document.getElementById('convertFrom').value = r.currency;
+}
+
+function renderBalance() {
+  const el = document.getElementById('balanceDisplay');
+  el.textContent = fmt(balance);
+  el.classList.remove('bump', 'bump-down');
+}
+
+function animateBalance(type) {
+  const el = document.getElementById('balanceDisplay');
+  el.classList.add(type === 'add' ? 'bump' : 'bump-down');
+  setTimeout(() => el.classList.remove('bump', 'bump-down'), 400);
+}
+
+function renderMeta() {
+  const container = document.getElementById('metaContent');
+  if (!meta) {
     container.innerHTML = `
-      <div class="meta-header">
-        <div class="meta-title">// mi meta</div>
-        <div class="meta-pct">${pct}%</div>
+      <div class="no-meta">Sin meta configurada</div>
+      <button class="btn-set-meta" onclick="openModal('meta')">+ Agregar meta</button>`;
+    return;
+  }
+  const pct = Math.min((balance / meta.amount) * 100, 100).toFixed(1);
+  container.innerHTML = `
+    <div class="meta-header">
+      <div class="meta-title">// mi meta</div>
+      <div class="meta-pct">${pct}%</div>
+    </div>
+    <div class="meta-name">${meta.name}</div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="meta-amounts">
+      <span>Ahorrado: ${fmt(balance)}</span>
+      <span>Meta: ${fmt(meta.amount)}</span>
+    </div>
+    <button class="btn-set-meta" style="margin-top:12px" onclick="openModal('meta')">Cambiar meta</button>`;
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!history.length) {
+    list.innerHTML = '<div class="empty-history">A\u00fan no hay movimientos.<br>\u00a1Empieza ahorrando!</div>';
+    return;
+  }
+  list.innerHTML = [...history].reverse().map(h => `
+    <div class="history-item">
+      <div class="history-dot ${h.type}"></div>
+      <div class="history-info">
+        <div class="history-desc">${h.desc || (h.type==='add'?'Ingreso':'Gasto')}</div>
+        <div class="history-time">${h.time}</div>
       </div>
-      <div class="meta-name">${meta.name}</div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width:${pct}%"></div>
+      <div class="history-amount ${h.type}">${h.type==='add'?'+':'\u2212'}${fmt(h.amount)}</div>
+    </div>`).join('');
+}
+
+function renderWishlist() {
+  const container = document.getElementById('wishlistItems');
+  document.getElementById('wishCount').textContent = wishlist.length + ' items';
+  if (!wishlist.length) {
+    container.innerHTML = '<div class="empty-wish">Tu lista est\u00e1 vac\u00eda.<br>\u00a1Agrega lo que quieres comprar! \ud83d\uded2</div>';
+    return;
+  }
+  container.innerHTML = wishlist.map((w, i) => `
+    <div class="wish-item">
+      <div class="wish-item-top">
+        <div class="wish-item-name">${w.name}</div>
+        ${w.price ? `<div class="wish-item-price">${w.price}</div>` : ''}
       </div>
-      <div class="meta-amounts">
-        <span>Ahorrado: ${fmt(balance)}</span>
-        <span>Meta: ${fmt(meta.amount)}</span>
+      ${w.link ? `<a class="wish-item-link" href="${w.link}" target="_blank">\ud83d\udd17 ${w.link}</a>` : ''}
+      <div class="wish-item-bottom">
+        <div class="wish-item-note"></div>
+        <button class="btn-del-wish" onclick="removeWish(${i})">\u2715</button>
       </div>
-      <button class="btn-set-meta" style="margin-top:12px" onclick="openModal('meta')">Cambiar meta</button>
-    `;
+    </div>`).join('');
+}
+
+function render() {
+  renderHeader();
+  renderBalance();
+  renderMeta();
+  renderHistory();
+  renderWishlist();
+  document.getElementById('notasArea').value = notes;
+}
+
+// ===== WISHLIST =====
+function addWish() {
+  const name  = document.getElementById('wishName').value.trim();
+  const link  = document.getElementById('wishLink').value.trim();
+  const price = document.getElementById('wishPrice').value.trim();
+  if (!name) { showToast('\u26a0\ufe0f Escribe el nombre del producto'); return; }
+  wishlist.push({ name, link, price });
+  save();
+  renderWishlist();
+  document.getElementById('wishName').value = '';
+  document.getElementById('wishLink').value = '';
+  document.getElementById('wishPrice').value = '';
+  showToast('\ud83d\uded2 Agregado a la lista');
+}
+
+function removeWish(i) {
+  wishlist.splice(i, 1);
+  save();
+  renderWishlist();
+  showToast('\ud83d\uddd1\ufe0f Eliminado');
+}
+
+function saveNotes() {
+  notes = document.getElementById('notasArea').value;
+  save();
+  showToast('\u2705 Notas guardadas');
+}
+
+// ===== CONVERTER =====
+async function doConvert() {
+  const amount = parseFloat(document.getElementById('convertAmount').value);
+  const from   = document.getElementById('convertFrom').value;
+  const to     = document.getElementById('convertTo').value;
+  const result = document.getElementById('convResult');
+  const gLink  = document.getElementById('googleConvertLink');
+
+  if (!amount || amount <= 0) { showToast('\u26a0\ufe0f Ingresa una cantidad'); return; }
+  if (from === to) {
+    result.innerHTML = `<div class="result-amount">${amount.toLocaleString()}</div><div class="result-rate">Misma moneda</div>`;
+    return;
   }
 
-  function renderHistory() {
-    const list = document.getElementById('historyList');
-    if (history.length === 0) {
-      list.innerHTML = '<div class="empty-history">Aún no hay movimientos.<br>¡Empieza ahorrando!</div>';
-      return;
-    }
-    list.innerHTML = [...history].reverse().map(h => `
-      <div class="history-item">
-        <div class="history-dot ${h.type}"></div>
-        <div class="history-info">
-          <div class="history-desc">${h.desc || (h.type === 'add' ? 'Ingreso' : 'Gasto')}</div>
-          <div class="history-time">${h.time}</div>
-        </div>
-        <div class="history-amount ${h.type}">${h.type === 'add' ? '+' : '−'}${fmt(h.amount)}</div>
-      </div>
-    `).join('');
+  result.innerHTML = `<div class="loading-spin">\u27f3</div>`;
+  gLink.style.display = 'none';
+
+  try {
+    const res  = await fetch(`https://api.frankfurter.app/latest?from=${from}&to=${to}`);
+    const data = await res.json();
+    const rate = data.rates[to];
+    if (!rate) throw new Error('No rate');
+    const converted = (amount * rate).toFixed(2);
+    result.innerHTML = `
+      <div class="result-amount">${parseFloat(converted).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} ${to}</div>
+      <div class="result-rate">1 ${from} = ${rate.toFixed(4)} ${to} \u00b7 Tasa en tiempo real</div>`;
+    gLink.href = `https://www.google.com/search?q=${amount}+${from}+to+${to}`;
+    gLink.style.display = 'inline-flex';
+  } catch(e) {
+    // Fallback: open Google directly
+    result.innerHTML = `<div class="result-placeholder">No se pudo obtener la tasa. Usa Google \u2193</div>`;
+    gLink.href = `https://www.google.com/search?q=${amount}+${from}+to+${to}`;
+    gLink.style.display = 'inline-flex';
+    gLink.textContent = '\ud83d\udd0d Ver conversi\u00f3n en Google';
   }
+}
 
-  function render() {
-    renderBalance();
-    renderMeta();
-    renderHistory();
-  }
+// ===== MODAL =====
+function openModal(mode) {
+  currentMode = mode;
+  const overlay = document.getElementById('modalOverlay');
+  const title   = document.getElementById('modalTitle');
+  const btn     = document.getElementById('btnConfirm');
+  const body    = document.getElementById('modalBody');
+  const metaBody= document.getElementById('metaBody');
+  const regBody = document.getElementById('regionBody');
 
-  function openModal(mode) {
-    currentMode = mode;
-    const overlay = document.getElementById('modalOverlay');
-    const title = document.getElementById('modalTitle');
-    const btn = document.getElementById('btnConfirm');
-    const body = document.getElementById('modalBody');
-    const metaBody = document.getElementById('metaBody');
+  body.style.display = 'none';
+  metaBody.style.display = 'none';
+  regBody.style.display = 'none';
 
-    if (mode === 'add') {
-      title.textContent = '+ Ingresar dinero';
-      title.className = 'modal-title add-title';
-      btn.className = 'btn-confirm add';
-      btn.textContent = 'agregar';
-      body.style.display = 'block';
-      metaBody.style.display = 'none';
-      document.getElementById('amountInput').value = '';
-      document.getElementById('descInput').value = '';
-      setTimeout(() => document.getElementById('amountInput').focus(), 400);
-    } else if (mode === 'sub') {
-      title.textContent = '− Registrar gasto';
-      title.className = 'modal-title sub-title';
-      btn.className = 'btn-confirm sub';
-      btn.textContent = 'registrar';
-      body.style.display = 'block';
-      metaBody.style.display = 'none';
-      document.getElementById('amountInput').value = '';
-      document.getElementById('descInput').value = '';
-      setTimeout(() => document.getElementById('amountInput').focus(), 400);
+  if (mode === 'add') {
+    title.textContent = '+ Ingresar dinero';
+    title.className = 'modal-title add-title';
+    btn.className = 'btn-confirm add';
+    btn.textContent = 'agregar';
+    body.style.display = 'block';
+    document.getElementById('amountInput').value = '';
+    document.getElementById('descInput').value = '';
+    setTimeout(() => document.getElementById('amountInput').focus(), 400);
+  } else if (mode === 'sub') {
+    title.textContent = '\u2212 Registrar gasto';
+    title.className = 'modal-title sub-title';
+    btn.className = 'btn-confirm sub';
+    btn.textContent = 'registrar';
+    body.style.display = 'block';
+    document.getElementById('amountInput').value = '';
+    document.getElementById('descInput').value = '';
+    setTimeout(() => document.getElementById('amountInput').focus(), 400);
+  } else if (mode === 'meta') {
+    title.textContent = '\u25ce Configurar meta';
+    title.className = 'modal-title meta-title-text';
+    btn.className = 'btn-confirm meta';
+    btn.textContent = 'guardar';
+    metaBody.style.display = 'block';
+    if (meta) {
+      document.getElementById('metaNameInput').value = meta.name;
+      document.getElementById('metaAmountInput').value = meta.amount;
     } else {
-      title.textContent = '◎ Configurar meta';
-      title.className = 'modal-title meta-title-text';
-      btn.className = 'btn-confirm meta';
-      btn.textContent = 'guardar';
-      body.style.display = 'none';
-      metaBody.style.display = 'block';
-      if (meta) {
-        document.getElementById('metaNameInput').value = meta.name;
-        document.getElementById('metaAmountInput').value = meta.amount;
-      } else {
-        document.getElementById('metaNameInput').value = '';
-        document.getElementById('metaAmountInput').value = '';
-      }
+      document.getElementById('metaNameInput').value = '';
+      document.getElementById('metaAmountInput').value = '';
     }
-
-    overlay.classList.add('open');
+  } else if (mode === 'region') {
+    title.textContent = '\ud83c\udf0d Selecciona tu regi\u00f3n';
+    title.className = 'modal-title region-title';
+    btn.className = 'btn-confirm region';
+    btn.textContent = 'guardar';
+    regBody.style.display = 'block';
+    selectedRegionCode = regionCode;
+    buildRegionGrid();
   }
 
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('open');
-  }
+  overlay.classList.add('open');
+}
 
-  function closeModalOutside(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  }
+function buildRegionGrid() {
+  const grid = document.getElementById('regionGrid');
+  grid.innerHTML = REGIONS.map(r => `
+    <div class="region-option ${r.code === selectedRegionCode ? 'selected' : ''}" onclick="selectRegion('${r.code}')">
+      <span class="r-flag">${r.flag}</span>
+      <div class="r-info">
+        <div class="r-name">${r.name}</div>
+        <div class="r-cur">${r.currency}</div>
+      </div>
+    </div>`).join('');
+}
 
-  function confirm() {
-    if (currentMode === 'add' || currentMode === 'sub') {
-      const amount = parseFloat(document.getElementById('amountInput').value);
-      const desc = document.getElementById('descInput').value.trim();
-      if (!amount || amount <= 0) { showToast('⚠️ Ingresa una cantidad válida'); return; }
-      if (currentMode === 'sub' && amount > balance) { showToast('⚠️ No tienes suficiente saldo'); return; }
+function selectRegion(code) {
+  selectedRegionCode = code;
+  document.querySelectorAll('.region-option').forEach(el => el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
 
-      balance = currentMode === 'add' ? balance + amount : balance - amount;
-      const now = new Date();
-      history.push({
-        type: currentMode,
-        amount,
-        desc,
-        time: now.toLocaleString('es-MX', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })
-      });
-      save();
-      animateBalance(currentMode);
-      render();
-      showToast(currentMode === 'add' ? '✅ Dinero agregado' : '💸 Gasto registrado');
-    } else {
-      const name = document.getElementById('metaNameInput').value.trim();
-      const amount = parseFloat(document.getElementById('metaAmountInput').value);
-      if (!name) { showToast('⚠️ Escribe un nombre para tu meta'); return; }
-      if (!amount || amount <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
-      meta = { name, amount };
-      save();
-      renderMeta();
-      showToast('🎯 Meta guardada');
-    }
-    closeModal();
-  }
-
-  function clearHistory() {
-    if (history.length === 0) return;
-    if (confirm('¿Limpiar todo el historial?')) {
-      history = [];
-      save();
-      renderHistory();
-      showToast('🗑️ Historial limpiado');
-    }
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-
-  // Date
-  const d = new Date();
-  document.getElementById('dateLabel').textContent =
-    d.toLocaleDateString('es-MX', { weekday:'short', day:'numeric', month:'short' }).toUpperCase();
-
-  // Enter key
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && document.getElementById('modalOverlay').classList.contains('open')) confirm();
-    if (e.key === 'Escape') closeModal();
-  });
-
-  // Override confirm to avoid conflict with window.confirm
-  const origConfirm = window.confirm.bind(window);
-  window.confirm = origConfirm;
-
-  render();
-</script>
-</body>
-</html>
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
