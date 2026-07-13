@@ -1,267 +1,572 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IMPORTANTE - Lee esto ahora</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storm Lord Clicker</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    overflow: hidden;
+    touch-action: none;
+  }
+  #game { position: relative; width: 100%; height: 100%; }
+  canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  #hud {
+    position: absolute; top: 0; left: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 12px; pointer-events: none; z-index: 5;
+  }
+  #money {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 28px; font-weight: 800; color: #1a1a1a;
+  }
+  #money .coin {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffe27a, #f5a623);
+    display: flex; align-items: center; justify-content: center;
+    color: #7a4b00; font-weight: 900; font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  }
+  #bossWrap { margin-top: 6px; text-align: center; opacity: 0; transition: opacity .3s; }
+  #bossWrap.show { opacity: 1; }
+  #bossName { font-weight: 800; font-size: 15px; letter-spacing: 1px; color: #222; margin-bottom: 4px; }
+  #bossBarOuter {
+    width: 280px; height: 18px; border: 2px solid #222; border-radius: 10px;
+    background: #eee; overflow: hidden;
+  }
+  #bossBarInner {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #c0392b, #e74c3c);
+    transition: width .25s ease-out;
+  }
 
-    body {
-      background: #0a0a0a;
-      color: #00ff88;
-      font-family: 'Share Tech Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+  #bottomHud {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding-bottom: 14px; z-index: 5;
+  }
+  #energyLabel { font-weight: 800; letter-spacing: 1px; color: #333; font-size: 14px; margin-bottom: 4px; }
+  #energyBarOuter {
+    width: 280px; height: 14px; border-radius: 8px; background: #eee;
+    overflow: hidden; border: 1px solid #ddd; margin-bottom: 12px;
+  }
+  #energyBarInner {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #e74c3c, #f1c40f, #2ecc71);
+    transition: width .2s;
+  }
 
-    /* Matrix rain canvas */
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      opacity: 0.07;
-      z-index: 0;
-    }
+  #shop {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    max-width: 640px; padding: 0 10px;
+  }
+  .shopItem {
+    background: #eee; border-radius: 14px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px; min-width: 150px;
+    cursor: pointer; transition: transform .1s, background .2s;
+    border: 2px solid transparent;
+  }
+  .shopItem:active { transform: scale(0.96); }
+  .shopItem.affordable { background: #dff5e1; border-color: #2ecc71; }
+  .shopItem .icon { font-size: 20px; width: 26px; text-align: center; }
+  .shopItem .info { display: flex; flex-direction: column; }
+  .shopItem .name { font-weight: 700; font-size: 13px; color: #222; display:flex; align-items:center; gap:4px;}
+  .shopItem .price { font-weight: 700; font-size: 13px; color: #555; }
+  .shopItem .owned { font-size: 11px; color: #2b8a3e; font-weight: 700; }
 
-    .container {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      padding: 2rem;
-    }
+  #popupLayer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 4; }
+  .floatText {
+    position: absolute; font-weight: 800; font-size: 16px;
+    color: #27ae60; text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    animation: floatUp 0.9s ease-out forwards;
+    transform: translate(-50%, -50%);
+  }
+  .floatText.gold { color: #f39c12; font-size: 20px; }
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%,-50%) translateY(0); }
+    100% { opacity: 0; transform: translate(-50%,-50%) translateY(-45px); }
+  }
 
-    .warning-box {
-      border: 2px solid #ff4444;
-      padding: 2rem 3rem;
-      background: rgba(255, 0, 0, 0.05);
-      animation: borderFlash 1s infinite;
-      max-width: 600px;
-    }
+  #bossToast {
+    position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 26px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.75);
+    padding: 14px 26px; border-radius: 14px; z-index: 20; opacity: 0; pointer-events: none;
+    transition: opacity .3s, transform .3s;
+  }
+  #bossToast.show { opacity: 1; transform: translate(-50%,-50%) scale(1.05); }
 
-    @keyframes borderFlash {
-      0%, 100% { border-color: #ff4444; box-shadow: 0 0 10px #ff4444; }
-      50% { border-color: #ff0000; box-shadow: 0 0 30px #ff0000; }
-    }
-
-    .skull { font-size: 3rem; animation: shake 0.3s infinite; }
-    @keyframes shake {
-      0%,100% { transform: rotate(-5deg); }
-      50% { transform: rotate(5deg); }
-    }
-
-    h1 {
-      color: #ff4444;
-      font-size: 1.5rem;
-      margin: 1rem 0 0.5rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    .subtitle {
-      color: #aaa;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-      letter-spacing: 2px;
-    }
-
-    .progress-label {
-      color: #00ff88;
-      font-size: 0.75rem;
-      margin-bottom: 0.3rem;
-      letter-spacing: 2px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 14px;
-      background: #111;
-      border: 1px solid #00ff88;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #00ff88, #00ffcc);
-      animation: fillBar 4s forwards;
-      position: relative;
-    }
-
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      right: 0; top: 0; bottom: 0;
-      width: 6px;
-      background: #fff;
-      filter: blur(3px);
-    }
-
-    @keyframes fillBar {
-      0%   { width: 0%; }
-      30%  { width: 35%; }
-      60%  { width: 68%; }
-      85%  { width: 89%; }
-      100% { width: 100%; }
-    }
-
-    .status-text {
-      font-size: 0.75rem;
-      color: #555;
-      letter-spacing: 1px;
-      margin-bottom: 2rem;
-      min-height: 1rem;
-    }
-
-    /* Hidden video frame */
-    #rickContainer {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    #rickContainer.show {
-      display: flex;
-    }
-
-    .rick-title {
-      color: #ff4444;
-      font-size: 1.2rem;
-      letter-spacing: 3px;
-      animation: glitch 0.5s infinite;
-    }
-
-    @keyframes glitch {
-      0%,100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; transform: translateX(0); }
-      25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; transform: translateX(2px); }
-      75% { text-shadow: 2px 0 #00ffff, -2px 0 #ff0000; transform: translateX(-2px); }
-    }
-
-    iframe {
-      border: 3px solid #ff4444;
-      box-shadow: 0 0 30px #ff4444;
-      max-width: 100%;
-    }
-
-    .lol-text {
-      color: #00ff88;
-      font-size: 0.9rem;
-      letter-spacing: 3px;
-      animation: pulse 0.8s infinite;
-    }
-
-    @keyframes pulse {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    #loadingSection { display: block; }
-    #loadingSection.hide { display: none; }
-  </style>
+  #googlePlayFake {
+    position: absolute; top: 12px; left: 12px; background: #eee; border-radius: 20px;
+    padding: 6px 14px; font-size: 12px; font-weight: 700; color: #555; z-index: 6;
+  }
+</style>
 </head>
 <body>
+<div id="game">
+  <canvas id="canvas"></canvas>
+  <div id="popupLayer"></div>
+  <div id="googlePlayFake">▶ Google Play</div>
 
-<canvas id="matrix"></canvas>
-
-<div class="container">
-  <!-- FASE 1: PANTALLA FALSA DE CARGA -->
-  <div id="loadingSection">
-    <div class="warning-box">
-      <div class="skull">💀</div>
-      <h1>ALERTA DE SEGURIDAD</h1>
-      <p class="subtitle">ANALIZANDO SISTEMA... POR FAVOR ESPERE</p>
-
-      <div class="progress-label" id="progressLabel">ESCANEANDO ARCHIVOS...</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="status-text" id="statusText">Iniciando análisis...</div>
+  <div id="hud">
+    <div id="money"><div class="coin">$</div><span id="moneyVal">0</span></div>
+    <div id="bossWrap">
+      <div id="bossName">THE STORM LORD</div>
+      <div id="bossBarOuter"><div id="bossBarInner"></div></div>
     </div>
   </div>
 
-  <!-- FASE 2: RICKROLL -->
-  <div id="rickContainer">
-    <div class="rick-title">☠ SIKEEE ☠</div>
-    <iframe
-      id="rickVideo"
-      width="560"
-      height="315"
-      src=""
-      title="Rick Roll"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>
-    <div class="lol-text">[ ERES EL ELEGIDO. FELICIDADES. ]</div>
+  <div id="bossToast"></div>
+
+  <div id="bottomHud">
+    <div id="energyLabel">ENERGÍA</div>
+    <div id="energyBarOuter"><div id="energyBarInner"></div></div>
+    <div id="shop">
+      <div class="shopItem" id="buyTurret">
+        <div class="icon">🗼</div>
+        <div class="info">
+          <div class="name">Torreta <span class="owned" id="turretOwned"></span></div>
+          <div class="price" id="turretPrice">$500</div>
+        </div>
+      </div>
+      <div class="shopItem" id="buyTesla">
+        <div class="icon">⚡</div>
+        <div class="info">
+          <div class="name">Torres Tesla <span class="owned" id="teslaOwned"></span></div>
+          <div class="price" id="teslaPrice">$2.0K</div>
+        </div>
+      </div>
+      <div class="shopItem" id="buyEnergy">
+        <div class="icon">🔋</div>
+        <div class="info">
+          <div class="name">Energy Boost <span class="owned" id="energyOwned"></span></div>
+          <div class="price" id="energyPrice">$1.2K</div>
+        </div>
+      </div>
+      <div class="shopItem" id="buyOvercharge">
+        <div class="icon">🔒</div>
+        <div class="info">
+          <div class="name">Overcharge</div>
+          <div class="price" id="overchargePrice">$3.0K</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-  // Matrix rain
-  const canvas = document.getElementById('matrix');
+(function(){
+  const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const cols = Math.floor(canvas.width / 16);
-  const drops = Array(cols).fill(1);
-  function drawMatrix() {
-    ctx.fillStyle = 'rgba(0,0,0,0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#00ff88';
-    ctx.font = '14px monospace';
-    drops.forEach((y, i) => {
-      const text = String.fromCharCode(0x30A0 + Math.random() * 96);
-      ctx.fillText(text, i * 16, y * 16);
-      if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
+  const popupLayer = document.getElementById('popupLayer');
+  const moneyVal = document.getElementById('moneyVal');
+  const bossWrap = document.getElementById('bossWrap');
+  const bossBarInner = document.getElementById('bossBarInner');
+  const bossNameEl = document.getElementById('bossName');
+  const energyBarInner = document.getElementById('energyBarInner');
+  const energyLabelEl = document.getElementById('energyLabel');
+  const bossToast = document.getElementById('bossToast');
+
+  function resize(){
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = window.innerHeight * devicePixelRatio;
+    canvas.style.width = window.innerWidth+'px';
+    canvas.style.height = window.innerHeight+'px';
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---------- STATE ----------
+  let state = {
+    money: 0,
+    energy: 100,
+    maxEnergy: 100,
+    rechargeThreshold: 10, // cuando se vacía, hay que recargar hasta aquí para poder clickear de nuevo
+    locked: false,         // true = sin energía, no se puede clickear
+    energyRegen: 10,       // per second
+    clickEnergyCost: 5,   // solo el jugador gasta esto al clickear
+    turretCount: 0,
+    teslaCount: 0,
+    energyLevel: 0,
+    turretCost: 500,
+    teslaCost: 2000,
+    energyCost: 1200,
+    overchargeCost: 3000,
+    overchargeActive: false,
+    overchargeTimer: 0,
+    bossLevel: 0,
+    bossNames: ["THE STORM LORD","IRON COLOSSUS","VOID EMPRESS","CHAOS TITAN","ETERNAL WARDEN"]
+  };
+
+  function fmt(n){
+    if(n >= 1000000) return (n/1000000).toFixed(1)+'M';
+    if(n >= 1000) return (n/1000).toFixed(1)+'K';
+    return Math.floor(n).toString();
+  }
+
+  // ----- BOSS: aparece de forma aleatoria, no encadenado -----
+  let boss = null; // {x,y,r,hp,maxHp,name}
+  let bossCooldown = rand(6, 16); // segundos hasta que pueda aparecer el primero
+
+  function spawnBoss(){
+    const W = window.innerWidth, H = window.innerHeight;
+    const name = state.bossNames[Math.floor(Math.random()*state.bossNames.length)];
+    const maxHp = 260 + state.bossLevel*180;
+    boss = {
+      x: rand(120, W-120),
+      y: rand(190, H-230),
+      r: 55 + Math.min(state.bossLevel*2, 20),
+      hp: maxHp,
+      maxHp: maxHp,
+      name: name,
+      spin: 0
+    };
+    bossNameEl.textContent = boss.name;
+    bossWrap.classList.add('show');
+    updateBossBar();
+    showBossToast('¡'+boss.name+' HA APARECIDO!');
+  }
+
+  function updateBossBar(){
+    if(!boss){ bossBarInner.style.width = '0%'; return; }
+    const pct = Math.max(0, boss.hp/boss.maxHp)*100;
+    bossBarInner.style.width = pct+'%';
+  }
+
+  function defeatBoss(){
+    const reward = 300 + state.bossLevel*200;
+    state.money += reward;
+    showBossToast('¡'+boss.name+' DERROTADO! +$'+fmt(reward));
+    state.bossLevel++;
+    for(let i=0;i<4;i++) spawnBall();
+    boss = null;
+    bossWrap.classList.remove('show');
+    bossCooldown = rand(15, 35); // próximo boss no aparece seguido
+  }
+
+  function showBossToast(msg){
+    bossToast.textContent = msg;
+    bossToast.classList.add('show');
+    setTimeout(()=> bossToast.classList.remove('show'), 1400);
+  }
+
+  // ---------- BALLS ----------
+  let balls = [];
+  let turretIcons = []; // {x,y}
+  let teslaIcons = [];
+
+  function rand(a,b){ return a + Math.random()*(b-a); }
+
+  function spawnBall(x,y,r,isGold){
+    const W = window.innerWidth, H = window.innerHeight;
+    balls.push({
+      x: x!==undefined? x: rand(40, W-40),
+      y: y!==undefined? y: rand(140, H-180),
+      vx: rand(-0.4,0.4),
+      vy: rand(-0.4,0.4),
+      r: r || rand(20, 44),
+      gold: isGold || (Math.random() < 0.06),
+      wobble: Math.random()*Math.PI*2
     });
   }
-  setInterval(drawMatrix, 50);
 
-  // Fake loading messages
-  const messages = [
-    "Iniciando análisis...",
-    "Detectando vulnerabilidades...",
-    "Accediendo a archivos del sistema...",
-    "Error crítico encontrado...",
-    "Intentando recuperar datos...",
-    "Conexión establecida con servidor remoto...",
-    "Descargando payload...",
-    "Preparando sorpresa especial...",
-    "Listo. 😈"
-  ];
+  const MAX_BALLS = 14;
+  for(let i=0;i<8;i++) spawnBall();
+  setInterval(()=>{ if(balls.length < MAX_BALLS) spawnBall(); }, 1500);
 
-  const statusEl = document.getElementById('statusText');
-  const labelEl = document.getElementById('progressLabel');
-  let msgIndex = 0;
+  function floatText(x,y,text,gold){
+    const el = document.createElement('div');
+    el.className = 'floatText' + (gold?' gold':'');
+    el.style.left = x+'px';
+    el.style.top = y+'px';
+    el.textContent = text;
+    popupLayer.appendChild(el);
+    setTimeout(()=> el.remove(), 950);
+  }
 
-  const msgInterval = setInterval(() => {
-    if (msgIndex < messages.length) {
-      statusEl.textContent = messages[msgIndex];
-      if (msgIndex === 5) labelEl.textContent = "CARGANDO ARCHIVO ESPECIAL...";
-      if (msgIndex === 7) labelEl.textContent = "COMPLETANDO...";
-      msgIndex++;
+  function popBall(ball, index, auto){
+    balls.splice(index,1);
+
+    const mult = state.overchargeActive ? 1.6 : 1;
+    let value;
+    if(ball.gold){
+      value = Math.max(20, Math.round(ball.r * 3.2 * mult));
+      floatText(ball.x, ball.y, '+$'+value, true);
     } else {
-      clearInterval(msgInterval);
+      value = Math.max(3, Math.round(ball.r * 0.8 * mult));
+      floatText(ball.x, ball.y, '+$'+value, false);
     }
-  }, 450);
+    state.money += value;
 
-  // After 4.5s, show the Rick Roll
-  setTimeout(() => {
-    document.getElementById('loadingSection').classList.add('hide');
-    const rc = document.getElementById('rickContainer');
-    rc.classList.add('show');
-    // Set src here so autoplay triggers
-    document.getElementById('rickVideo').src =
-      "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1";
-  }, 4500);
+    // splitting (las doradas también se dividen, generando doradas más chicas)
+    if(ball.r > 16){
+      const childR = ball.r * 0.62;
+      for(let i=0;i<2;i++){
+        const ang = rand(0, Math.PI*2);
+        spawnBall(
+          ball.x + Math.cos(ang)*6,
+          ball.y + Math.sin(ang)*6,
+          childR,
+          ball.gold
+        );
+        const nb = balls[balls.length-1];
+        nb.vx = Math.cos(ang)*rand(0.8,1.6);
+        nb.vy = Math.sin(ang)*rand(0.8,1.6);
+      }
+    }
+
+    // solo el jugador (clicks manuales) gasta energía; las torretas/torres no
+    if(!auto){
+      state.energy = Math.max(0, state.energy - state.clickEnergyCost);
+      if(state.energy <= 0){
+        state.energy = 0;
+        state.locked = true;
+      }
+    }
+  }
+
+  // click / tap handling
+  canvas.addEventListener('pointerdown', (e)=>{
+    if(state.locked) return; // sin energía, no se puede clickear hasta recargar
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // el boss es la única entidad que cuenta como golpe al boss
+    if(boss){
+      const dx = x-boss.x, dy = y-boss.y;
+      if(dx*dx+dy*dy <= (boss.r+10)*(boss.r+10)){
+        const dmg = 22 + Math.round(state.bossLevel*1.5);
+        boss.hp -= dmg;
+        const reward = 8 + state.bossLevel*3;
+        state.money += reward;
+        floatText(boss.x, boss.y - boss.r*0.4, '+$'+reward, false);
+        state.energy = Math.max(0, state.energy - state.clickEnergyCost);
+        if(state.energy <= 0){ state.energy = 0; state.locked = true; }
+        if(boss.hp <= 0){
+          updateBossBar();
+          defeatBoss();
+        } else {
+          updateBossBar();
+        }
+        return;
+      }
+    }
+
+    for(let i=balls.length-1;i>=0;i--){
+      const b = balls[i];
+      const dx = x-b.x, dy = y-b.y;
+      if(dx*dx+dy*dy <= (b.r+8)*(b.r+8)){
+        popBall(b,i,false);
+        break;
+      }
+    }
+  });
+
+  // ---------- TURRETS / TESLA (gratis, no gastan energía del jugador) ----------
+  setInterval(()=>{
+    // la energía se regenera sola; si estaba bloqueada, se desbloquea al llegar al umbral
+    state.energy = Math.min(state.maxEnergy, state.energy + state.energyRegen*0.2);
+    if(state.locked && state.energy >= state.rechargeThreshold){
+      state.locked = false;
+    }
+
+    if(state.turretCount > 0 && balls.length > 0){
+      const target = balls[Math.floor(Math.random()*balls.length)];
+      const idx = balls.indexOf(target);
+      if(idx>=0) popBall(target, idx, true);
+    }
+    if(state.teslaCount > 0 && balls.length > 1){
+      const hits = Math.min(1 + state.teslaCount, balls.length);
+      for(let i=0;i<hits;i++){
+        if(balls.length===0) break;
+        const idx = Math.floor(Math.random()*balls.length);
+        popBall(balls[idx], idx, true);
+      }
+    }
+    energyBarInner.style.width = (state.energy/state.maxEnergy*100)+'%';
+    energyBarInner.style.background = state.locked
+      ? '#c0392b'
+      : 'linear-gradient(90deg, #e74c3c, #f1c40f, #2ecc71)';
+    energyLabelEl.textContent = state.locked ? 'SIN ENERGÍA - RECARGANDO...' : 'ENERGÍA';
+  }, 900);
+
+  // ---------- BOSS RANDOM SPAWN TIMER ----------
+  setInterval(()=>{
+    if(!boss){
+      bossCooldown -= 0.5;
+      if(bossCooldown <= 0){
+        spawnBoss();
+      }
+    }
+  }, 500);
+
+  // overcharge timer
+  setInterval(()=>{
+    if(state.overchargeActive){
+      state.overchargeTimer -= 0.5;
+      if(state.overchargeTimer <= 0){
+        state.overchargeActive = false;
+      }
+    }
+  }, 500);
+
+  // ---------- RENDER LOOP ----------
+  function draw(){
+    const W = window.innerWidth, H = window.innerHeight;
+    ctx.clearRect(0,0,W,H);
+
+    // move & draw balls
+    for(const b of balls){
+      b.x += b.vx;
+      b.y += b.vy;
+      b.wobble += 0.05;
+      if(b.x < b.r || b.x > W-b.r) b.vx *= -1;
+      if(b.y < 130 || b.y > H-190) b.vy *= -1;
+      b.x = Math.max(b.r, Math.min(W-b.r, b.x));
+      b.y = Math.max(130, Math.min(H-190, b.y));
+
+      ctx.beginPath();
+      if(b.gold){
+        const grad = ctx.createRadialGradient(b.x-b.r*0.3,b.y-b.r*0.3,2,b.x,b.y,b.r);
+        grad.addColorStop(0,'#fff3b0');
+        grad.addColorStop(1,'#f5a623');
+        ctx.fillStyle = grad;
+        ctx.shadowColor = 'rgba(245,166,35,0.6)';
+        ctx.shadowBlur = 14;
+      } else {
+        ctx.fillStyle = '#111';
+        ctx.shadowBlur = 0;
+      }
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // draw boss (distinto a las bolitas normales)
+    if(boss){
+      boss.spin += 0.01;
+      ctx.save();
+      ctx.translate(boss.x, boss.y);
+      ctx.rotate(boss.spin);
+      ctx.fillStyle = '#111';
+      ctx.beginPath();
+      const spikes = 8;
+      for(let i=0;i<spikes;i++){
+        const a1 = (i/spikes)*Math.PI*2;
+        const a2 = a1 + (Math.PI/spikes);
+        const outer = boss.r * 1.35;
+        ctx.lineTo(Math.cos(a1)*outer, Math.sin(a1)*outer);
+        ctx.lineTo(Math.cos(a2)*boss.r, Math.sin(a2)*boss.r);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.fillStyle = '#3b6fe0';
+      ctx.arc(boss.x, boss.y, boss.r*0.4, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // draw turret icons bottom-left/right
+    drawTurretIcon(70, H-150, state.turretCount>0);
+    drawTeslaIcon(W-70, H-150, state.teslaCount>0);
+
+    requestAnimationFrame(draw);
+  }
+
+  function drawTurretIcon(x,y,active){
+    ctx.save();
+    ctx.globalAlpha = active ? 1 : 0.35;
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.moveTo(x, y-24);
+    ctx.lineTo(x-16, y+10);
+    ctx.lineTo(x+16, y+10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillRect(x-18, y+10, 36, 10);
+    ctx.restore();
+  }
+  function drawTeslaIcon(x,y,active){
+    ctx.save();
+    ctx.globalAlpha = active ? 1 : 0.35;
+    ctx.strokeStyle = '#222';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x, y-26);
+    ctx.lineTo(x+10, y-4);
+    ctx.lineTo(x-6, y-2);
+    ctx.lineTo(x+6, y+22);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  draw();
+
+  // ---------- UI / MONEY LOOP ----------
+  function updateUI(){
+    moneyVal.textContent = fmt(state.money);
+
+    setShopItem('buyTurret','turretPrice','turretOwned', state.turretCost, state.turretCount);
+    setShopItem('buyTesla','teslaPrice','teslaOwned', state.teslaCost, state.teslaCount);
+    setShopItem('buyEnergy','energyPrice','energyOwned', state.energyCost, state.energyLevel);
+
+    const ocEl = document.getElementById('buyOvercharge');
+    document.getElementById('overchargePrice').textContent = '$'+fmt(state.overchargeCost);
+    ocEl.classList.toggle('affordable', state.money >= state.overchargeCost && !state.overchargeActive);
+
+    requestAnimationFrame(updateUI);
+  }
+  function setShopItem(btnId, priceId, ownedId, cost, owned){
+    const btn = document.getElementById(btnId);
+    document.getElementById(priceId).textContent = '$'+fmt(cost);
+    document.getElementById(ownedId).textContent = owned>0 ? ('x'+owned) : '';
+    btn.classList.toggle('affordable', state.money >= cost);
+  }
+  updateUI();
+
+  // ---------- SHOP ACTIONS ----------
+  document.getElementById('buyTurret').addEventListener('click', ()=>{
+    if(state.money >= state.turretCost){
+      state.money -= state.turretCost;
+      state.turretCount++;
+      state.turretCost = Math.round(state.turretCost*1.8);
+    }
+  });
+  document.getElementById('buyTesla').addEventListener('click', ()=>{
+    if(state.money >= state.teslaCost){
+      state.money -= state.teslaCost;
+      state.teslaCount++;
+      state.teslaCost = Math.round(state.teslaCost*1.9);
+    }
+  });
+  document.getElementById('buyEnergy').addEventListener('click', ()=>{
+    if(state.money >= state.energyCost){
+      state.money -= state.energyCost;
+      state.energyLevel++;
+      state.maxEnergy += 40;
+      state.energyRegen += 1.5;
+      state.energyCost = Math.round(state.energyCost*1.7);
+    }
+  });
+  document.getElementById('buyOvercharge').addEventListener('click', ()=>{
+    if(state.money >= state.overchargeCost && !state.overchargeActive){
+      state.money -= state.overchargeCost;
+      state.overchargeActive = true;
+      state.overchargeTimer = 10;
+      showBossToast('¡OVERCHARGE ACTIVADO!');
+    }
+  });
+
+})();
 </script>
 </body>
 </html>
