@@ -1,10 +1,15 @@
 {
-    "name": "Pyon",
+    "name": "PyonV2",
     "description": "Theme for Pyoncord/Bunny (idk what im doing - todocraft)",
     "authors": [
         {
             "name": "LampDelivery",
             "id": "650805815623680030"
+        }
+
+        {
+            "name": "Todocraft"
+            "id": "1376698758187712562"
         }
     ],
     "semanticColors": {
